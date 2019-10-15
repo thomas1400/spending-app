@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import csv
 from datetime import date
 from collections import Counter
@@ -70,11 +71,14 @@ class SpendingAnalyzer:
                 self.label_sums[label] = 0
             self.label_sums[label] += self.trans_amounts[i]
 
-        self.draw()
+    def generate_figure(self, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        ax1 = fig.add_subplot(131)
+        ax2 = fig.add_subplot(132)
+        ax3 = fig.add_subplot(133)
 
-    def draw(self):
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-        fig.set_size_inches(12, 5)
+        # fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+        # fig.set_size_inches(12, 5)
         ax1.plot_date(self.dates[0:self.DISP_RANGE], self.balances[0:self.DISP_RANGE], '-')
         ax1.plot_date(self.dates[0:self.DISP_RANGE], self.averages[0:self.DISP_RANGE], 'r--')
         ax1.set(title='Balance vs. Time')
@@ -91,8 +95,10 @@ class SpendingAnalyzer:
                 labels=[self.LABEL_NAMES[k-1] for k in counts], autopct="%d%%")
         ax3.set(title='Spending Breakdown')
 
-        plt.tight_layout()
-        plt.show()
+        # plt.tight_layout()
+        # plt.show()
+
+        return fig
 
 
 if __name__ == '__main__':

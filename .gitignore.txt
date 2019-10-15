@@ -1,0 +1,3 @@
+#ignore google cookie
+.google-cookie
+__pycache__/
