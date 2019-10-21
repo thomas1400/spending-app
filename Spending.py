@@ -5,7 +5,6 @@ import csv
 from datetime import date
 from collections import Counter
 
-
 class SpendingAnalyzer:
 
     AVG_LEN = 5
@@ -14,6 +13,8 @@ class SpendingAnalyzer:
     LABEL_NAMES = ['Food', 'Travel', 'Activities', 'Wants', 'Needs', 'Savings', 'Income']
 
     def __init__(self, file_path):
+        matplotlib.rcParams.update({'figure.autolayout': True})
+
         with open(file_path) as file:
             reader = csv.reader(file, delimiter=',')
 
@@ -71,34 +72,42 @@ class SpendingAnalyzer:
                 self.label_sums[label] = 0
             self.label_sums[label] += self.trans_amounts[i]
 
-    def generate_figure(self, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        ax1 = fig.add_subplot(131)
-        ax2 = fig.add_subplot(132)
-        ax3 = fig.add_subplot(133)
+    def generate_figures(self, width=5, height=4, dpi=100):
+        fig1 = Figure(figsize=(width, height), dpi=dpi)
+        ax1 = fig1.add_subplot(111)
+        fig2 = Figure(figsize=(width, height), dpi=dpi)
+        ax2 = fig2.add_subplot(111)
+        fig3 = Figure(figsize=(width, height), dpi=dpi)
+        ax3 = fig3.add_subplot(111)
+
 
         # fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-        # fig.set_size_inches(12, 5)
+        fig1.set_size_inches(width, height)
         ax1.plot_date(self.dates[0:self.DISP_RANGE], self.balances[0:self.DISP_RANGE], '-')
         ax1.plot_date(self.dates[0:self.DISP_RANGE], self.averages[0:self.DISP_RANGE], 'r--')
         ax1.set(title='Balance vs. Time')
         plt.setp(ax1.get_xticklabels(), rotation=75)
+        plt.subplots_adjust(bottom=0.15)
+
 
         #ax2.plot(self.dates[0:self.DISP_RANGE], self.balances[0:self.DISP_RANGE], '--')
         ax2.bar(self.dates[0:self.DISP_RANGE], self.differences[0:self.DISP_RANGE])
         ax2.xaxis_date()
         ax2.set(title='Spending vs. Time')
         plt.setp(ax2.get_xticklabels(), rotation=75)
+        plt.gcf().subplots_adjust(bottom=0.15)
+
 
         counts = Counter(self.label_sums)
         ax3.pie([v for v in counts.values()],
                 labels=[self.LABEL_NAMES[k-1] for k in counts], autopct="%d%%")
         ax3.set(title='Spending Breakdown')
+        plt.gcf().subplots_adjust(bottom=0.15)
 
         # plt.tight_layout()
         # plt.show()
 
-        return fig
+        return fig1, fig2, fig3
 
 
 if __name__ == '__main__':
